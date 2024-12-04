@@ -47,7 +47,6 @@ create table retail_sales(
 - **Null Value Check**: Check for any null values in the dataset and delete records with missing data.
 
 select * from retail_sales limit 10;
---
 select 
    count (*) 
 from retail_sales;
@@ -68,6 +67,7 @@ where customer_id is null;
 
 select * from retail_sales
 where gender is null;
+
 -- to check the null values in one command for all columns
 
 select * from retail_sales
