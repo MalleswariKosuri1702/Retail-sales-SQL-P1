@@ -22,23 +22,21 @@ This project is designed to demonstrate SQL skills and techniques typically used
 - **Database Creation**: The project starts by creating a database named `p1_retail_db`.
 - **Table Creation**: A table named `retail_sales` is created to store the sales data. The table structure includes columns for transaction ID, sale date, sale time, customer ID, gender, age, product category, quantity sold, price per unit, cost of goods sold (COGS), and total sale amount.
 
-```sql
-CREATE DATABASE p1_retail_db;
-
-CREATE TABLE retail_sales
-(
-    transactions_id INT PRIMARY KEY,
-    sale_date DATE,	
-    sale_time TIME,
-    customer_id INT,	
-    gender VARCHAR(10),
-    age INT,
-    category VARCHAR(35),
-    quantity INT,
-    price_per_unit FLOAT,	
-    cogs FLOAT,
-    total_sale FLOAT
-);
+drop table if exists retail_sales;
+create table retail_sales(
+                          transactions_id int primary key,
+                          sale_date date,	
+						  sale_time time,	
+						  customer_id int,	
+						  gender varchar(10),
+						  age int,	
+						  category	varchar(35),
+						  quantity int,	
+						  price_per_unit float,	
+						  cogs float,
+						  total_sale float
+						  );
+--
 ```
 
 ### 2. Data Exploration & Cleaning
@@ -48,144 +46,194 @@ CREATE TABLE retail_sales
 - **Category Count**: Identify all unique product categories in the dataset.
 - **Null Value Check**: Check for any null values in the dataset and delete records with missing data.
 
-```sql
-SELECT COUNT(*) FROM retail_sales;
-SELECT COUNT(DISTINCT customer_id) FROM retail_sales;
-SELECT DISTINCT category FROM retail_sales;
+select * from retail_sales limit 10;
+--
+select 
+   count (*) 
+from retail_sales;
+--DATA CLEANING
+--checking the null values in all columns (individula check)
 
-SELECT * FROM retail_sales
-WHERE 
-    sale_date IS NULL OR sale_time IS NULL OR customer_id IS NULL OR 
-    gender IS NULL OR age IS NULL OR category IS NULL OR 
-    quantity IS NULL OR price_per_unit IS NULL OR cogs IS NULL;
+select * from retail_sales
+where transactions_id is null;
 
-DELETE FROM retail_sales
-WHERE 
-    sale_date IS NULL OR sale_time IS NULL OR customer_id IS NULL OR 
-    gender IS NULL OR age IS NULL OR category IS NULL OR 
-    quantity IS NULL OR price_per_unit IS NULL OR cogs IS NULL;
-```
+select * from retail_sales
+where sale_date is null;
+
+select * from retail_sales
+where sale_time is null;
+
+select * from retail_sales
+where customer_id is null;
+
+select * from retail_sales
+where gender is null;
+-- to check the null values in one command for all columns
+
+select * from retail_sales
+where 
+     transactions_id is null 
+     or
+	 sale_date is null
+	 or
+	 sale_time is null
+	 or
+	 customer_id	is null
+	 or
+	 gender	is null
+	 or
+	 age	is null
+	 or
+	 category	is null
+	 or
+	 quantity	is null
+	 or
+	 price_per_unit	is null
+	 or
+	 cogs	is null
+	 or
+	 total_sale is null;
+---deleting null values considering all the columns into the criteria
+delete from retail_sales
+where 
+     transactions_id is null 
+     or
+	 sale_date is null
+	 or
+	 sale_time is null
+	 or
+	 customer_id	is null
+	 or
+	 gender	is null
+	 or
+	 age	is null
+	 or
+	 category	is null
+	 or
+	 quantity	is null
+	 or
+	 price_per_unit	is null
+	 or
+	 cogs	is null
+	 or
+	 total_sale is null;
+----DATA EXPLORATION 
+
+--how many sales we have?
+select count(*) as total_sales from retail_sales;
+
+--how many customers we have?
+select
+ count(distinct(customer_id)) as total_customers from retail_sales;
+ 
+--how many categories we have?
+select
+ count(distinct(category)) as total_customers from retail_sales;
+
+--What are the categories we have
+select 
+      distinct(category) as types_in_categories 
+	  from retail_sales;
+
 
 ### 3. Data Analysis & Findings
 
 The following SQL queries were developed to answer specific business questions:
 
 1. **Write a SQL query to retrieve all columns for sales made on '2022-11-05**:
-```sql
-SELECT *
-FROM retail_sales
-WHERE sale_date = '2022-11-05';
-```
+select * from retail_sales
+where
+sale_date = '2022-11-05';
 
 2. **Write a SQL query to retrieve all transactions where the category is 'Clothing' and the quantity sold is more than 4 in the month of Nov-2022**:
 ```sql
-SELECT 
-  *
-FROM retail_sales
-WHERE 
-    category = 'Clothing'
-    AND 
-    TO_CHAR(sale_date, 'YYYY-MM') = '2022-11'
-    AND
-    quantity >= 4
-```
+select * from retail_sales
+where category = 'Clothing' 
+  and 
+  quantity >= 4 
+  and 
+  to_char(sale_date,'YYYY-MM') ='2022-11';
 
 3. **Write a SQL query to calculate the total sales (total_sale) for each category.**:
-```sql
-SELECT 
-    category,
-    SUM(total_sale) as net_sale,
-    COUNT(*) as total_orders
-FROM retail_sales
-GROUP BY 1
-```
+select 
+  category,
+  sum(total_sale) as net_sales,
+  count(transactions_id) as total_transcations
+from retail_sales
+group by 1;
 
 4. **Write a SQL query to find the average age of customers who purchased items from the 'Beauty' category.**:
-```sql
-SELECT
-    ROUND(AVG(age), 2) as avg_age
-FROM retail_sales
-WHERE category = 'Beauty'
-```
+select 
+     round(avg(age)) as Avg_age
+from retail_sales
+where category='Beauty';
 
 5. **Write a SQL query to find all transactions where the total_sale is greater than 1000.**:
-```sql
-SELECT * FROM retail_sales
-WHERE total_sale > 1000
-```
+select
+* 
+from retail_sales
+where 
+total_sale > 1000;
+
 
 6. **Write a SQL query to find the total number of transactions (transaction_id) made by each gender in each category.**:
-```sql
-SELECT 
-    category,
-    gender,
-    COUNT(*) as total_trans
-FROM retail_sales
-GROUP 
-    BY 
-    category,
-    gender
-ORDER BY 1
+select gender,category,
+count(*) as total_trans
+from retail_sales
+group by gender,category
+order by 2;
 ```
 
 7. **Write a SQL query to calculate the average sale for each month. Find out best selling month in each year**:
-```sql
-SELECT 
-       year,
-       month,
-    avg_sale
-FROM 
-(    
-SELECT 
-    EXTRACT(YEAR FROM sale_date) as year,
-    EXTRACT(MONTH FROM sale_date) as month,
-    AVG(total_sale) as avg_sale,
-    RANK() OVER(PARTITION BY EXTRACT(YEAR FROM sale_date) ORDER BY AVG(total_sale) DESC) as rank
-FROM retail_sales
-GROUP BY 1, 2
-) as t1
-WHERE rank = 1
-```
+--Rank is a window function
+--Partition in the below used to diffenetiatie the ranking in both 2022 and 2023 and nte we should not use alias inside the windows function
+--as in the below we created a new row called Rank,we will not be bale  to diercetly print the value
+--so use the sub query function.
+select *
+from
+(select
+    Extract(YEAR from sale_date) as year,
+    Extract(MONTH from sale_date) as month,
+	avg(total_sale) as avg_sales,
+	Rank() over(Partition by Extract(YEAR from sale_date) order by avg(total_sale) desc) as rank
+from retail_sales
+group by 1,2)
+where rank = 1;
 
 8. **Write a SQL query to find the top 5 customers based on the highest total sales **:
-```sql
-SELECT 
-    customer_id,
-    SUM(total_sale) as total_sales
-FROM retail_sales
-GROUP BY 1
-ORDER BY 2 DESC
-LIMIT 5
-```
+select customer_id,
+       sum(total_sale) as total_sale
+from  retail_sales
+group by 1
+order by 2 desc
+limit 5;
+
 
 9. **Write a SQL query to find the number of unique customers who purchased items from each category.**:
-```sql
-SELECT 
-    category,    
-    COUNT(DISTINCT customer_id) as cnt_unique_cs
-FROM retail_sales
-GROUP BY category
-```
+select 
+count(distinct(customer_id)) as unique_number_of_customers,category
+from retail_sales
+group by 2
+order by 1;
 
 10. **Write a SQL query to create each shift and number of orders (Example Morning <12, Afternoon Between 12 & 17, Evening >17)**:
-```sql
-WITH hourly_sale
-AS
+with hourly_sales as
 (
-SELECT *,
-    CASE
-        WHEN EXTRACT(HOUR FROM sale_time) < 12 THEN 'Morning'
-        WHEN EXTRACT(HOUR FROM sale_time) BETWEEN 12 AND 17 THEN 'Afternoon'
-        ELSE 'Evening'
-    END as shift
-FROM retail_sales
+select *,
+   case
+     when extract (HOUR from sale_time)< 12 then 'Morning'
+     when extract (HOUR from sale_time) between 12 and 17 then 'Afternoon'
+     Else 'Evening'
+   End as shift
+from retail_sales
 )
-SELECT 
-    shift,
-    COUNT(*) as total_orders    
-FROM hourly_sale
-GROUP BY shift
-```
+select shift,
+       count(*) as total_orders 
+from hourly_sales
+group by shift
+
+
+--End of the project
 
 ## Findings
 
